@@ -2,6 +2,7 @@ package com.meuteste.Meu.Teste.controllers;
 
 import com.meuteste.Meu.Teste.entities.Person;
 import com.meuteste.Meu.Teste.repositories.PersonRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,12 +48,12 @@ public class PersonController {
         Obs: como é um PUT, por exemplo, se passar somente o ID e Name, o Email será salvo como null 
      */
     @PutMapping
-    public Person alter(@RequestBody Person person) {
+    public Person alter(@RequestBody @Valid Person person) {
         if (repository.existsById(person.getId())) {
             return repository.save(person);
         }
 
-        return person;
+        return null;
     }
 
 }
