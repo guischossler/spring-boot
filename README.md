@@ -6,7 +6,7 @@ Este repositório contém uma pequena API de livraria desenvolvida enquanto estu
   - **URL**: http://localhost:8080/api/persons
 
 - **Consultar pessoa por ID**: 
-  - **Método**: [GET](http://localhost:8080/api/persons)1)
+  - **Método**: [GET](http://localhost:8080/api/persons)
   - **URL**: http://localhost:8080/api/persons/{id}
   - ***Exemplo 1***: http://localhost:8080/api/persons/1
   - ***Exemplo 2***: http://localhost:8080/api/persons/4
