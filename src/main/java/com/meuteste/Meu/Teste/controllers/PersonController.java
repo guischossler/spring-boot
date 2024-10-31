@@ -4,9 +4,16 @@ import com.meuteste.Meu.Teste.entities.Person;
 import com.meuteste.Meu.Teste.repositories.PersonRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/persons")
@@ -32,8 +39,8 @@ public class PersonController {
     }
 
     @PostMapping
-    public Person save (@RequestBody Person person) {
-        return repository.save(person);
+    public ResponseEntity<String> save(@RequestBody @Valid Person person) {
+        return ResponseEntity.ok("Pessoa válida => " + person.toString());
     }
 
     @DeleteMapping(value = "/{id}")
@@ -55,5 +62,21 @@ public class PersonController {
 
         return null;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleArgumentException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+
+            errors.put(fieldName, errorMessage);
+        });
+
+        return errors;
+    }
+
 
 }

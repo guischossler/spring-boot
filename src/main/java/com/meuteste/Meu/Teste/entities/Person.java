@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+//@Getter
+//@Setter
+@Data
 @Entity
 @Table(name = "tb_persons")
 public class Person {
@@ -23,5 +25,16 @@ public class Person {
     @Email(message = "Invalid field value")
     @NotBlank(message = "Field not provided")
     private String email;
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Person(");
+        if (id != null) sb.append("id=," + id+",");
+        sb.append("name="+name+",");
+        sb.append("email="+email+")");
+
+        return sb.toString();
+    }
 
 }
