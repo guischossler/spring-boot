@@ -40,4 +40,19 @@ public class PersonController {
         repository.deleteById(id);
     }
 
+    /*
+        Faz a att dos dados somente se o ID existe, mas se o ID não existe
+        ele apenas retorna a Entidade com os dados passados no Body
+
+        Obs: como é um PUT, por exemplo, se passar somente o ID e Name, o Email será salvo como null 
+     */
+    @PutMapping
+    public Person alter(@RequestBody Person person) {
+        if (repository.existsById(person.getId())) {
+            return repository.save(person);
+        }
+
+        return person;
+    }
+
 }
