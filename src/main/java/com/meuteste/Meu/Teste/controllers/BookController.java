@@ -1,7 +1,8 @@
 package com.meuteste.Meu.Teste.controllers;
 
+import com.meuteste.Meu.Teste.entities.Book;
 import com.meuteste.Meu.Teste.entities.Person;
-import com.meuteste.Meu.Teste.repositories.PersonRepository;
+import com.meuteste.Meu.Teste.repositories.BookRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,59 +11,53 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/api/persons")
-public class PersonController {
-
-    private final PersonRepository repository;
+@RequestMapping("/api/books")
+public class BookController {
 
     @Autowired
-    public PersonController(PersonRepository repository) {
-        this.repository = repository;
-    }
+    BookRepository repository;
 
     @GetMapping
-    public List<Person> findAll() {
-        List<Person> persons = repository.findAll();
-        return persons;
+    public List<Book> findAll () {
+        List<Book> books = repository.findAll();
+        return books;
     }
 
     @GetMapping(value = "/{id}")
-    public Person findById (@PathVariable Long id) {
-        Person person = repository.findById(id).get();
-        return person;
+    public Book findById (@PathVariable Long id) {
+        Book book = repository.findById(id).get();
+        return book;
     }
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody @Valid Person person) {
+    public ResponseEntity<String> save(@RequestBody @Valid Book book) {
         try {
-            repository.save(person);
-            return ResponseEntity.ok("Valid person => " + person.toString());
+            repository.save(book);
+            return ResponseEntity.ok("Valid book => " + book);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving the person: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error saving the book: " + e.getMessage());
         }
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteById(@PathVariable Long id) {
-        repository.deleteById(id);
-    }
+    public void deleteById(@PathVariable Long id) { repository.deleteById(id); }
 
-    /*
+      /*
         Faz a att dos dados somente se o ID existe, mas se o ID não existe
         ele apenas retorna a Entidade com os dados passados no Body
 
-        Obs: como é um PUT, por exemplo, se passar somente o ID e Name, o Email será salvo como null 
+        Obs: como é um PUT, por exemplo, se passar somente o ID e Name, o autor será salvo como null
      */
     @PutMapping
-    public Person alter(@RequestBody @Valid Person person) {
-        if (repository.existsById(person.getId())) {
-            return repository.save(person);
+    public Book alter(@RequestBody @Valid Book book) {
+        if (repository.existsById(book.getId())) {
+            return repository.save(book);
         }
 
         return null;
@@ -82,5 +77,4 @@ public class PersonController {
 
         return errors;
     }
-
 }
