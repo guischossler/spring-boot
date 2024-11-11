@@ -42,7 +42,7 @@ public class PersonController {
     public ResponseEntity<String> save(@RequestBody @Valid Person person) {
         try {
             repository.save(person);
-            return ResponseEntity.ok("Valid person => " + person.toString());
+            return ResponseEntity.ok("Valid person => " + person);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error saving the person: " + e.getMessage());
         }
