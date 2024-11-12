@@ -1,14 +1,15 @@
 package com.meuteste.Meu.Teste.controllers;
 
 import com.meuteste.Meu.Teste.entities.Rental;
-import com.meuteste.Meu.Teste.exceptions.RentalExceptionHandler;
 import com.meuteste.Meu.Teste.repositories.RentalRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/rentals")
@@ -26,7 +27,6 @@ public class RentalController {
     @GetMapping(value = "/{id}")
     public Rental findById(@PathVariable Long id) {
         Rental rental = repository.findById(id).get();
-        if (rental == null) new RentalExceptionHandler();
         return rental;
     }
 
@@ -41,8 +41,13 @@ public class RentalController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        if(!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
         repository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // se deletou com sucesso cfme padrao Rest
     }
 
 }
