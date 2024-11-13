@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Teste Consulta GET</title>
+</head>
+<body>
+
+<button onclick="fetchData()">Refresh</button>
+
+<script>
+    const persons = [];
+
+    const addElementHtml = (
+      tagHtml,
+      attributeHtml = null,
+      attributeNameHtml = null
+    ) => {
+      const element = document.createElement(tagHtml);
+
+      if (attributeHtml && attributeNameHtml) {
+        element.setAttribute(attributeHtml, attributeNameHtml);
+      }
+
+      document.body.appendChild(element);
+      return element;
+    };
+
+    /* Teste Consulta GET */
+    const fetchData = () => {
+      fetch("http://localhost:8080/api/persons")
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Network response was not ok " + res.statusText);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          persons.length = 0; // Limpa o array antes de adicionar os novos dados
+          persons.push(...data);
+
+          console.log(persons);
+
+
+          displayPersons();
+        })
+        .catch((error) => {
+          console.error("Fetch error:", error);
+        });
+    };
+
+    const displayPersons = () => {
+      const element = document.querySelector(".main");
+      element.textContent = ""; // Limpa o conteúdo anterior
+
+      persons.forEach((person) => {
+        const item = document.createElement("p");
+        item.textContent = `Id: ${person.id}, Name: ${person.name}, E-mail: ${person.email}`;
+        element.appendChild(item);
+      });
+    };
+
+    /* Chamadas */
+    addElementHtml("div", "class", "main");
+    window.onload = fetchData;
+</script>
+</body>
+</html>
