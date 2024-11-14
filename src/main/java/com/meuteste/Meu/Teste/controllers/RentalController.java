@@ -15,34 +15,69 @@ import java.util.Optional;
 @RequestMapping(value = "/api/rentals")
 public class RentalController {
 
+    private final RentalRepository repository;
+
     @Autowired
-    RentalRepository repository;
+    public RentalController(RentalRepository repository) {
+        this.repository = repository;
+    }
 
     @GetMapping
-    public List<Rental> findAll() {
+
+    public ResponseEntity<List<Rental>> findAll() {
         List<Rental> rentals = repository.findAll();
-        return rentals;
+        return ResponseEntity.ok(rentals);
     }
 
     @GetMapping(value = "/{id}")
-    public Rental findById(@PathVariable Long id) {
-        Rental rental = repository.findById(id).get();
-        return rental;
+    public ResponseEntity<Rental> findById(@PathVariable Long id) {
+        Optional<Rental> rental = repository.findById(id);
+        if (rental.isPresent()) {
+            return ResponseEntity.ok(rental.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody @Valid Rental rental) {
-        try {
-            repository.save(rental);
-            return ResponseEntity.ok("Valid rental => " + rental);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving the rental: " + e.getMessage());
+    public ResponseEntity<Rental> save(@RequestBody @Valid Rental rental) {
+        Rental savedRental = repository.save(rental);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedRental);
+    }
+
+    // PUT -> Atualiza completamente
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Rental> alter(@PathVariable Long id, @RequestBody Rental rental) {
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        rental.setId(id);
+        Rental updatedRental = repository.save(rental);
+        return ResponseEntity.ok(updatedRental);
+    }
+
+    // PATCH -> Atualiza parcialmente
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<Rental> alterPartial(@PathVariable Long id, @RequestBody Rental partialRental) {
+        Optional<Rental> existingRental = repository.findById(id);
+        if (existingRental.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Rental rental = existingRental.get();
+
+        if (partialRental.getBook() != null) {
+            rental.setBook(partialRental.getBook());
+        }
+        if (partialRental.getPerson() != null) {
+            rental.setPerson(partialRental.getPerson());
+        }
+
+        Rental updatedRental = repository.save(rental);
+        return ResponseEntity.ok(updatedRental);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        if(!repository.existsById(id)) {
+        if (!repository.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
