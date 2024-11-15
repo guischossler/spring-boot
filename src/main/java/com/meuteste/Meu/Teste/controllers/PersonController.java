@@ -6,17 +6,19 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/persons")
+/*
+    @CrossOrigin(origins = "http://127.0.0.1:5500")
+    agora não preciso mais usar essa anotacao,
+    pois o arquivo index.html esta em ./resources/static/index.html
+    e possivel acessar via http://localhost:8080/
+ */
 public class PersonController {
 
     private final PersonRepository repository;
@@ -27,60 +29,65 @@ public class PersonController {
     }
 
     @GetMapping
-    public List<Person> findAll() {
+    public ResponseEntity<List<Person>> findAll() {
         List<Person> persons = repository.findAll();
-        return persons;
+        return ResponseEntity.ok(persons);
     }
 
     @GetMapping(value = "/{id}")
-    public Person findById (@PathVariable Long id) {
-        Person person = repository.findById(id).get();
-        return person;
+    public ResponseEntity<Person> findById(@PathVariable Long id) {
+        Optional<Person> person = repository.findById(id);
+        if (person.isPresent()) {
+            return ResponseEntity.ok(person.get());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody @Valid Person person) {
-        try {
-            repository.save(person);
-            return ResponseEntity.ok("Valid person => " + person);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving the person: " + e.getMessage());
-        }
+    public ResponseEntity<Person> save(@RequestBody @Valid Person person) {
+        Person savedPerson = repository.save(person);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteById(@PathVariable Long id) {
-        repository.deleteById(id);
-    }
-
-    /*
-        Faz a att dos dados somente se o ID existe, mas se o ID não existe
-        ele apenas retorna a Entidade com os dados passados no Body
-
-        Obs: como é um PUT, por exemplo, se passar somente o ID e Name, o Email será salvo como null 
-     */
-    @PutMapping
-    public Person alter(@RequestBody @Valid Person person) {
-        if (repository.existsById(person.getId())) {
-            return repository.save(person);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return null;
+        repository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleArgumentException(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Person> update(@PathVariable Long id, @RequestBody @Valid Person person) {
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
+        person.setId(id);
+        Person updatedPerson = repository.save(person);
+        return ResponseEntity.ok(updatedPerson);
+    }
 
-            errors.put(fieldName, errorMessage);
-        });
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<Person> partialUpdate(@PathVariable Long id, @RequestBody Person person) {
+        Optional<Person> existingPersonOpt = repository.findById(id);
+        if (existingPersonOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        return errors;
+        Person existingPerson = existingPersonOpt.get();
+
+        if (person.getName() != null) {
+            existingPerson.setName(person.getName());
+        }
+        if (person.getEmail() != null) {
+            existingPerson.setEmail(person.getEmail());
+        }
+
+        repository.save(existingPerson);
+        return ResponseEntity.ok(existingPerson);
     }
 
 }

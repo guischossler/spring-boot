@@ -1,80 +1,88 @@
 package com.meuteste.Meu.Teste.controllers;
 
 import com.meuteste.Meu.Teste.entities.Book;
-import com.meuteste.Meu.Teste.entities.Person;
 import com.meuteste.Meu.Teste.repositories.BookRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
 
+
+    private final BookRepository repository;
+
     @Autowired
-    BookRepository repository;
+    public BookController(BookRepository repository) {
+        this.repository = repository;
+    }
 
     @GetMapping
-    public List<Book> findAll () {
+    public ResponseEntity<List<Book>> findAll() {
         List<Book> books = repository.findAll();
-        return books;
+        return ResponseEntity.ok(books);
     }
 
     @GetMapping(value = "/{id}")
-    public Book findById (@PathVariable Long id) {
-        Book book = repository.findById(id).get();
-        return book;
+    public ResponseEntity<Book> findById(@PathVariable Long id) {
+        Optional<Book> book = repository.findById(id);
+        if (!book.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        return ResponseEntity.ok().body(book.get());
     }
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody @Valid Book book) {
-        try {
-            repository.save(book);
-            return ResponseEntity.ok("Valid book => " + book);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error saving the book: " + e.getMessage());
-        }
+    public ResponseEntity<Book> save(@RequestBody @Valid Book book) {
+        Book savedBook = repository.save(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
     @DeleteMapping(value = "/{id}")
-    public void deleteById(@PathVariable Long id) { repository.deleteById(id); }
-
-      /*
-        Faz a att dos dados somente se o ID existe, mas se o ID não existe
-        ele apenas retorna a Entidade com os dados passados no Body
-
-        Obs: como é um PUT, por exemplo, se passar somente o ID e Name, o autor será salvo como null
-     */
-    @PutMapping
-    public Book alter(@RequestBody @Valid Book book) {
-        if (repository.existsById(book.getId())) {
-            return repository.save(book);
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        return null;
+        repository.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleArgumentException(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Book> update(@PathVariable Long id, @RequestBody @Valid Book book) {
+        if (!repository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
+        book.setId(id);
+        Book updatedBook = repository.save(book);
+        return ResponseEntity.ok(updatedBook);
+    }
 
-            errors.put(fieldName, errorMessage);
-        });
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<Book> partialUpdate(@PathVariable Long id, @RequestBody Book book) {
+        Optional<Book> existingBookOpt = repository.findById(id);
+        if (existingBookOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        return errors;
+        Book existingBook = existingBookOpt.get();
+
+        if (book.getName() != null) {
+            existingBook.setName(book.getName());
+        }
+        if (book.getAuthor() != null) {
+            existingBook.setAuthor(book.getAuthor());
+        }
+
+        repository.save(existingBook);
+        return ResponseEntity.ok(existingBook);
     }
 }
