@@ -26,10 +26,6 @@ public class RentalController {
     }
 
     @GetMapping
-<<<<<<< HEAD
-
-=======
->>>>>>> ajuste_retorno_controllers
     public ResponseEntity<List<Rental>> findAll() {
         List<Rental> rentals = repository.findAll();
         return ResponseEntity.ok(rentals);
