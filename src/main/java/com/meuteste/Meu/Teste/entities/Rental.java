@@ -11,11 +11,11 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    @JoinColumn(name = "book_id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "book_id")
     private Book book;
-    @OneToOne
-    @JoinColumn(name = "person_id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "person_id")
     private Person person;
 
 
