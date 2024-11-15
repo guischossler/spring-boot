@@ -1,28 +1,24 @@
 # API de Livraria 📚
-Este repositório contém uma pequena API de livraria desenvolvida enquanto estudo Spring Boot. O projeto busca explorar conceitos essenciais desse framework para construção de APIs.
 
-- **Consultar todas as pessoas**:
-  - **Método**: [GET](http://localhost:8080/api/persons)
-  - **URL**: http://localhost:8080/api/persons
+Este repositório contém uma pequena API de livraria desenvolvida enquanto estudo Spring Boot. O projeto explora conceitos essenciais do framework para construção de APIs.
 
-- **Consultar pessoa por ID**: 
-  - **Método**: [GET](http://localhost:8080/api/persons/1)
-  - **URL**: http://localhost:8080/api/persons/{id}
-  - ***Exemplo 1***: http://localhost:8080/api/persons/1
-  - ***Exemplo 2***: http://localhost:8080/api/persons/4
+## Endpoints
 
-- **Cadastrar pessoa**: 
-  - **Método**: POST
-  - **URL**: `http://localhost:8080/api/persons`
-  - **Body**:
-    ```json
-    {
-      "name": "Pessoa Teste",
-      "email": "pessoa.teste@example.com"
-    }
-    ```
-- **Deletar pessoa por ID**: 
-  - **Método**: [DELETE](http://localhost:8080/api/persons/1)
-  - **URL**: http://localhost:8080/api/persons/{id}
-  - ***Exemplo 1***: http://localhost:8080/api/persons/1
-  - ***Exemplo 2***: http://localhost:8080/api/persons/4
+Para todas as entidades, seguem os endpoints e exemplos de corpo para operações padrão.
+
+### Operações Padrão
+
+- **Consultar todas**: `GET /api/{entity}`
+- **Consultar por ID**: `GET /api/{entity}/{id}`
+- **Cadastrar**: `POST /api/{entity}` (verificar o que deve ser passado no body)
+- **Deletar por ID**: `DELETE /api/{entity}/{id}`
+- **Atualizar**: `PUT /api/{entity}/{id}` (verificar o que deve ser passado no body)
+- **Atualizar parcialmente**: `PATCH /api/{entity}/{id}` (verificar o que deve ser passado no body)
+
+### Entidades
+
+| Entidade | URL Base          | Exemplo de Corpo para Cadastro/Atualização (JSON)                                         |
+|----------|--------------------|-------------------------------------------------------------------------------------------|
+| Person   | `/api/persons`     | `{ "name": "Pessoa Teste", "email": "pessoa.teste@example.com" }`                         |
+| Book     | `/api/books`       | `{ "title": "Livro Teste", "author": "Autor Exemplo" }`                                   |
+| Rental   | `/api/rentals`     | `{ "personId": 1, "bookId": 1 }`                                                          |
