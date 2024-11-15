@@ -34,26 +34,22 @@ public class RentalController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<Rental> findById(@PathVariable Long id) {
         Optional<Rental> rental = repository.findById(id);
-<<<<<<< HEAD
         if (rental.isPresent()) {
             return ResponseEntity.ok(rental.get());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-=======
 
         if (!rental.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
         return ResponseEntity.ok(rental.get());
->>>>>>> ajuste_retorno_controllers
     }
 
     @PostMapping
     public ResponseEntity<Rental> save(@RequestBody @Valid Rental rental) {
         Rental savedRental = repository.save(rental);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedRental);
-<<<<<<< HEAD
     }
 
     // PUT -> Atualiza completamente
