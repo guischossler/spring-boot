@@ -2,6 +2,7 @@ package com.meuteste.Meu.Teste.controllers;
 
 import com.meuteste.Meu.Teste.entities.Rental;
 import com.meuteste.Meu.Teste.repositories.RentalRepository;
+import jakarta.servlet.annotation.HttpConstraint;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,6 @@ public class RentalController {
         if (!rental.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         return ResponseEntity.ok(rental.get());
     }
 
@@ -70,7 +70,6 @@ public class RentalController {
         if (partialRental.getPerson() != null) {
             rental.setPerson(partialRental.getPerson());
         }
-
         Rental updatedRental = repository.save(rental);
         return ResponseEntity.ok(updatedRental);
     }
@@ -80,7 +79,6 @@ public class RentalController {
         if (!repository.existsById(id)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         repository.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

@@ -28,13 +28,11 @@ public class Person {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Person(");
-        if (id != null) sb.append("id=," + id+",");
-        sb.append("name="+name+",");
-        sb.append("email="+email+")");
-
-        return sb.toString();
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 
 }

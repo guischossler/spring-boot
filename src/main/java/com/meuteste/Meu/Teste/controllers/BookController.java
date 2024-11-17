@@ -82,6 +82,10 @@ public class BookController {
             existingBook.setAuthor(book.getAuthor());
         }
 
+        if (book.getTotalCopies() != null) {
+            existingBook.setTotalCopies(book.getTotalCopies());
+        }
+
         repository.save(existingBook);
         return ResponseEntity.ok(existingBook);
     }

@@ -18,7 +18,6 @@ public class Rental {
     @JoinColumn(name = "person_id")
     private Person person;
 
-
     @Override
     public String toString() {
         return "Rental{" +
@@ -27,4 +26,5 @@ public class Rental {
                 ", person=" + person +
                 '}';
     }
+
 }
