@@ -22,6 +22,7 @@ public class Person {
     @NotBlank(message = "Field not provided")
     @Pattern(regexp = "^[a-zA-ZÀ-ÿ\\s]+$", message = "The field must contain only letters and spaces")
     private String name;
+
     @Email(message = "Invalid field value")
     @NotBlank(message = "Field not provided")
     private String email;

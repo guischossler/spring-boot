@@ -14,12 +14,15 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank(message = "Field not provided")
     private String name;
+
     @NotBlank(message = "Field not provided")
     private String author;
+
     @NotNull(message = "Field must not be null")
-    @Min(value = 1, message = "Field must be equal to or greater than one")
+    @Min(value = 0, message = "Field must be equal to or greater than zero")
     private Integer totalCopies;
 
     @Override
