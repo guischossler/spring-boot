@@ -16,7 +16,7 @@ public class Book {
     private Long id;
 
     @NotBlank(message = "Field not provided")
-    private String name;
+    private String title;
 
     @NotBlank(message = "Field not provided")
     private String author;
@@ -29,7 +29,7 @@ public class Book {
     public String toString() {
         return "Book{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", total copies=" + totalCopies +
                 '}';

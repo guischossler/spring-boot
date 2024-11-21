@@ -1,7 +1,7 @@
 package com.meuteste.Meu.Teste.controllers;
 
 import com.meuteste.Meu.Teste.entities.Person;
-import com.meuteste.Meu.Teste.repositories.PersonRepository;
+import com.meuteste.Meu.Teste.services.PersonService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,32 +11,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping(value = "/api/persons")
 /*
     @CrossOrigin(origins = "http://127.0.0.1:5500")
-    agora não preciso mais usar essa anotacao,
+    CORS: agora não preciso mais usar essa anotacao,
     pois o arquivo index.html esta em ./resources/static/index.html
     e possivel acessar via http://localhost:8080/
  */
+@CrossOrigin(origins = "http://127.0.0.1:5500")
+@RestController
+@RequestMapping(value = "/api/persons")
 public class PersonController {
 
-    private final PersonRepository repository;
+    private final PersonService personService;
 
     @Autowired
-    public PersonController(PersonRepository repository) {
-        this.repository = repository;
+    public PersonController(PersonService personService) {
+        this.personService = personService;
     }
 
     @GetMapping
     public ResponseEntity<List<Person>> findAll() {
-        List<Person> persons = repository.findAll();
+        List<Person> persons = personService.findAll();
         return ResponseEntity.ok(persons);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Person> findById(@PathVariable Long id) {
-        Optional<Person> person = repository.findById(id);
+        Optional<Person> person = personService.findById(id);
         if (person.isPresent()) {
             return ResponseEntity.ok(person.get());
         }
@@ -45,49 +46,37 @@ public class PersonController {
 
     @PostMapping
     public ResponseEntity<Person> save(@RequestBody @Valid Person person) {
-        Person savedPerson = repository.save(person);
+        Person savedPerson = personService.save(person);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPerson);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
+        boolean deleted = personService.deleteById(id);
+        if (!deleted) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        repository.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Person> update(@PathVariable Long id, @RequestBody @Valid Person person) {
-        if (!repository.existsById(id)) {
+        person.setId(id); // para garantir que é o mesmo id enviado no path
+        Optional<Person> updatedPersonOpt = personService.updateAllData(person);
+        if (updatedPersonOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        person.setId(id);
-        Person updatedPerson = repository.save(person);
-        return ResponseEntity.ok(updatedPerson);
+        return ResponseEntity.ok(updatedPersonOpt.get());
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<Person> partialUpdate(@PathVariable Long id, @RequestBody Person person) {
-        Optional<Person> existingPersonOpt = repository.findById(id);
-        if (existingPersonOpt.isEmpty()) {
+    public ResponseEntity<Person> partialUpdate(@PathVariable Long id, @RequestBody Person partialPerson) {
+        partialPerson.setId(id); // para garantir que é o mesmo id enviado no path
+        Optional<Person> updatedPersonOpt = personService.updateParcialData(partialPerson);
+        if (updatedPersonOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        Person existingPerson = existingPersonOpt.get();
-
-        if (person.getName() != null) {
-            existingPerson.setName(person.getName());
-        }
-        if (person.getEmail() != null) {
-            existingPerson.setEmail(person.getEmail());
-        }
-
-        repository.save(existingPerson);
-        return ResponseEntity.ok(existingPerson);
+        return ResponseEntity.ok(updatedPersonOpt.get());
     }
 
 }

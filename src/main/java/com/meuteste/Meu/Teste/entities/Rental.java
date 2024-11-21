@@ -1,6 +1,7 @@
 package com.meuteste.Meu.Teste.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -20,12 +21,17 @@ public class Rental {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    // AVAILABLE, RENTED, RETURNED
+    @NotBlank
+    private String rental_status;
+
     @Override
     public String toString() {
         return "Rental{" +
                 "id=" + id +
-                ", book=" + book +
-                ", person=" + person +
+                ", book_id=" + book +
+                ", person_id=" + person +
+                ", rental_status=" + rental_status +
                 '}';
     }
 

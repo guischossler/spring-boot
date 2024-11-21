@@ -27,13 +27,4 @@ public class Person {
     @NotBlank(message = "Field not provided")
     private String email;
 
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
-
 }

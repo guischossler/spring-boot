@@ -1,7 +1,7 @@
 package com.meuteste.Meu.Teste.controllers;
 
 import com.meuteste.Meu.Teste.entities.Book;
-import com.meuteste.Meu.Teste.repositories.BookRepository;
+import com.meuteste.Meu.Teste.services.BookService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,78 +15,61 @@ import java.util.Optional;
 @RequestMapping("/api/books")
 public class BookController {
 
-
-    private final BookRepository repository;
+    private final BookService bookService;
 
     @Autowired
-    public BookController(BookRepository repository) {
-        this.repository = repository;
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
     }
 
     @GetMapping
     public ResponseEntity<List<Book>> findAll() {
-        List<Book> books = repository.findAll();
+        List<Book> books = bookService.findAll();
         return ResponseEntity.ok(books);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Book> findById(@PathVariable Long id) {
-        Optional<Book> book = repository.findById(id);
-        if (!book.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        Optional<Book> book = bookService.findById(id);
+        if (book.isPresent()) {
+            return ResponseEntity.ok(book.get());
         }
-
-        return ResponseEntity.ok().body(book.get());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping
     public ResponseEntity<Book> save(@RequestBody @Valid Book book) {
-        Book savedBook = repository.save(book);
+        Book savedBook = bookService.save(book);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBook);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
+        boolean deleted = bookService.deleteById(id);
+        if (!deleted) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        repository.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Book> update(@PathVariable Long id, @RequestBody @Valid Book book) {
-        if (!repository.existsById(id)) {
+        book.setId(id); // para garantir que é o mesmo id enviado no path
+        Optional<Book> updatedBookOpt = bookService.updateAllData(book);
+        if (updatedBookOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        book.setId(id);
-        Book updatedBook = repository.save(book);
-        return ResponseEntity.ok(updatedBook);
+        return ResponseEntity.ok(updatedBookOpt.get());
     }
 
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<Book> partialUpdate(@PathVariable Long id, @RequestBody Book book) {
-        Optional<Book> existingBookOpt = repository.findById(id);
-        if (existingBookOpt.isEmpty()) {
+    public ResponseEntity<Book> partialUpdate(@PathVariable Long id, @RequestBody Book partialBook) {
+        partialBook.setId(id); // para garantir que é o mesmo id enviado no path
+        Optional<Book> updatedBookOpt = bookService.updateParcialData(partialBook);
+        if (updatedBookOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
-        Book existingBook = existingBookOpt.get();
-
-        if (book.getName() != null) {
-            existingBook.setName(book.getName());
-        }
-        if (book.getAuthor() != null) {
-            existingBook.setAuthor(book.getAuthor());
-        }
-
-        if (book.getTotalCopies() != null) {
-            existingBook.setTotalCopies(book.getTotalCopies());
-        }
-
-        repository.save(existingBook);
-        return ResponseEntity.ok(existingBook);
+        return ResponseEntity.ok(updatedBookOpt.get());
     }
+
 }
