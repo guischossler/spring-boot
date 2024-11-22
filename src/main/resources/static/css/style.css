@@ -1,0 +1,12 @@
+body {
+    background-color: #75c7f0;
+}
+
+table {
+    width: 100%
+}
+
+table, th, td {
+    border:1px solid black;
+}
+
