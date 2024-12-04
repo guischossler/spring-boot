@@ -10,7 +10,8 @@ INSERT INTO tb_books (title, author, total_copies) VALUES ('O Senhor dos Anéis'
 INSERT INTO tb_books (title, author, total_copies) VALUES ('A Revolução dos Bichos', 'George Orwell', 1);
 INSERT INTO tb_books (title, author, total_copies) VALUES ('O Pequeno Príncipe', 'Antoine de Saint-Exupéry', 1);
 
---AVAILABLE, RENTED, precisa do RETURNED? ou ta disponivel, ou nao
-INSERT INTO tb_rentals (book_id, person_id, rental_status) VALUES (3, 2, 'AVAILABLE');
-INSERT INTO tb_rentals (book_id, person_id, rental_status) VALUES (3, 2, 'RENTED');
---INSERT INTO tb_rentals (book_id, person_id, rental_status) VALUES (3, 2, 'RETURNED');
+INSERT INTO tb_books_copy (book_id, status) VALUES (1, 'AVAILABLE'); -- Dom Quixote
+INSERT INTO tb_books_copy (book_id, status) VALUES (2, 'AVAILABLE'); -- 1984
+INSERT INTO tb_books_copy (book_id, status) VALUES (3, 'AVAILABLE'); -- O Senhor dos Anéis
+INSERT INTO tb_books_copy (book_id, status) VALUES (4, 'AVAILABLE'); -- A Revolução dos Bichos
+INSERT INTO tb_books_copy (book_id, status) VALUES (5, 'AVAILABLE'); -- O Pequeno Príncipe

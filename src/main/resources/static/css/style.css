@@ -1,12 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+    font-size: 18px;
+}
+
 body {
     background-color: #75c7f0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    
 }
 
 table {
-    width: 100%
+    width: 100%;
+    min-width: 700px;
+    text-align: center;
+    border: 2px dashed;
+    /* border-collapse: collapse -> faz com que a borda que existe entre cada "celula" da tabela nao ocupe espaco */
+    border-collapse: collapse; 
 }
 
-table, th, td {
-    border:1px solid black;
+tbody tr:nth-child(odd) {
+    background-color: #bcbdbd;
 }
 
+tbody tr:nth-child(even) {
+    background-color: rgb(173, 173, 173);
+}
+
+th {
+    background-color: gray;
+    color: aliceblue;
+}
+
+button {
+    border-radius: 10px;
+    border: none;
+    padding: 5px;
+    background-color: dodgerblue;
+    color: aliceblue;
+    cursor: pointer;
+    margin: 3px;
+    width: 80px;
+    font-size: 15px;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+#btn-delete {
+    background-color: rgb(237, 47, 47);
+}
+
+#btn-edit {
+    background-color: mediumseagreen;
+}
+
+#container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#btn-refresh {
+    align-self: flex-end;
+}
+
+.btn-container {
+    min-width: 180px;
+}
+
+td {
+    max-width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 3px;
+}
+
+.tdName, .tdEmail, .btn-container{
+    text-align: start;
+    padding-left: 40px;
+}
