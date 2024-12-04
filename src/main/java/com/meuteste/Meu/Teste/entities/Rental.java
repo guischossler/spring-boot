@@ -1,7 +1,6 @@
 package com.meuteste.Meu.Teste.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
@@ -14,25 +13,15 @@ public class Rental {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "book_id")
-    private Book book;
+    @JoinColumn(name = "book_copy_id")
+    private BookCopy bookCopyId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id")
-    private Person person;
+    private Person personId;
 
-    // AVAILABLE, RENTED, RETURNED
-    @NotBlank
-    private String rental_status;
-
-    @Override
-    public String toString() {
-        return "Rental{" +
-                "id=" + id +
-                ", book_id=" + book +
-                ", person_id=" + person +
-                ", rental_status=" + rental_status +
-                '}';
-    }
+//    private Date rentalDate;
+//
+//    private Date returnDate;
 
 }

@@ -25,14 +25,4 @@ public class Book {
     @Min(value = 0, message = "Field must be equal to or greater than zero")
     private Integer totalCopies;
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", total copies=" + totalCopies +
-                '}';
-    }
-
 }
